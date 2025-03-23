@@ -86,66 +86,62 @@ sudo virt-customize -a jammy-server-cloudimg-amd64.img \
 
 ### 4. Upload the Customized Image to OpenStack
 ```bash
-microstack.openstack image create \
+sudo microstack.openstack image create \
   --file jammy-server-cloudimg-amd64.img \
   --disk-format qcow2 --container-format bare \
   --public ubuntu
 ```
 Verify the upload:
 ```bash
-microstack.openstack image list
+sudo microstack.openstack image list
 ```
 You should see **ubuntu** in the output.
 
 ### 5. Create a Router
 ```bash
-microstack.openstack router create my-router
+sudo microstack.openstack router create my-router
 ```
 
-### 6. Set an External Gateway for the Router
-Connect your router to an external network for external connectivity:
-```bash
-microstack.openstack router set my-router --external-gateway external
-```
-The `external` network is usually preconfigured in MicroStack.
-
-### 7. Verify or Create the Network
+### 6. Verify or Create the Network
 Check if a private network exists:
 ```bash
-microstack.openstack network list
+sudo microstack.openstack network list
 ```
 If not, create it:
 ```bash
-microstack.openstack network create private
+sudo microstack.openstack network create private
 ```
 Also, create a subnet (if needed):
 ```bash
-microstack.openstack subnet create --network private --subnet-range <your_ipv4_add in 192.168.1.0/24 format> private
+sudo microstack.openstack subnet create --network private --subnet-range <your_ipv4_add in 192.168.1.0/24 format> private
 ```
 
-### 8. Connect the Internal Network to the Router
+### 7. Connect the Internal Network to the Router
 ```bash
-microstack.openstack router add subnet my-router private
+sudo microstack.openstack router add subnet my-router private
 ```
+
+### 8. Set an External Gateway for the Router
+Connect your router to an external network for external connectivity:
+```bash
+sudo microstack.openstack router set my-router --external-gateway external
+```
+The `external` network is usually preconfigured in MicroStack.
 
 ### 9. Verify the Setup
 ```bash
-microstack.openstack router show my-router
+sudo microstack.openstack router show my-router
 ```
 
 ### 10. Add the Key to OpenStack
 Upload the public key to OpenStack:
 ```bash
-microstack.openstack keypair create --public-key ~/.ssh/microstack_key.pub my-key
+sudo microstack.openstack keypair create --public-key ~/.ssh/microstack_key.pub my-key
 ```
 Verify the key is added:
 ```bash
-microstack.openstack keypair list
+sudo microstack.openstack keypair list
 ```
-
-
-
-Here’s a corrected and improved version of your instructions with better clarity and flow:
 
 ---
 
@@ -154,7 +150,7 @@ Here’s a corrected and improved version of your instructions with better clari
 ### **1. Create a New Instance**
 Launch a VM using the uploaded image:
 ```bash
-microstack.openstack server create \
+sudo microstack.openstack server create \
   --image ubuntu \
   --flavor m1.small \
   --network private \
@@ -165,17 +161,17 @@ microstack.openstack server create \
 ### **2. Allocate a Floating IP**
 Allocate a floating IP from the external network:
 ```bash
-microstack.openstack floating ip create external
+sudo microstack.openstack floating ip create external
 ```
 This will return a floating IP address, e.g., `10.20.30.40`.
 
 ### **3. Associate the Floating IP with the Instance**
 ```bash
-microstack.openstack server add floating ip my-instance 10.20.30.40
+sudo microstack.openstack server add floating ip my-instance 10.20.30.40
 ```
 Verify the Floating IP assignment:
 ```bash
-microstack.openstack server show my-instance
+sudo microstack.openstack server show my-instance
 ```
 Ensure the floating IP is listed under `addresses`.
 
@@ -193,9 +189,6 @@ ssh -i ~/.ssh/microstack_key root@10.20.30.40
 ```bash
 sudo apt update && sudo apt install bc -y
 ```
-
-Got it! Since you're using the **bc** calculator (a command-line calculator), you don't need X11 forwarding or x2go. Here's the corrected section:  
-
 ---
 
 ### **6. Using the `bc` Calculator on the Remote VM**  
@@ -219,7 +212,7 @@ quit
 ### **1. Launch VMs for Web Server and REST API Server**
 #### **Web Server VM**
 ```bash
-microstack.openstack server create \
+sudo microstack.openstack server create \
   --image ubuntu \
   --flavor m1.small \
   --network private \
@@ -229,7 +222,7 @@ microstack.openstack server create \
 
 #### **REST API Server VM**
 ```bash
-microstack.openstack server create \
+sudo microstack.openstack server create \
   --image ubuntu \
   --flavor m1.small \
   --network private \
@@ -240,16 +233,19 @@ microstack.openstack server create \
 ### **2. Allocate and Assign Floating IPs**
 #### **Web Server VM**
 ```bash
-microstack.openstack floating ip create external
-microstack.openstack server add floating ip webserver-vm <webserver-ip>
+sudo microstack.openstack floating ip create external
+```
+```bash
+sudo microstack.openstack server add floating ip webserver-vm <webserver-ip>
 ```
 
 #### **REST API Server VM**
 ```bash
-microstack.openstack floating ip create external
-microstack.openstack server add floating ip restserver-vm <restserver-ip>
+sudo microstack.openstack floating ip create external
 ```
-
+```bash
+sudo microstack.openstack server add floating ip restserver-vm <restserver-ip>
+```
 
 #### **REST API Server VM**
 ```bash
@@ -282,11 +278,11 @@ if __name__ == '__main__':
 ### **3. Security Groups Are Blocking Port 5000**
 Check if your instance’s security group allows port 5000:
 ```bash
-microstack.openstack security group rule list default
+sudo microstack.openstack security group rule list default
 ```
 If TCP (port 5000) is missing, allow it:
 ```bash
-microstack.openstack security group rule create --protocol tcp --dst-port 5000 default
+sudo microstack.openstack security group rule create --protocol tcp --dst-port 5000 default
 ```
 
 ### **4. Start the Flask App**
@@ -338,11 +334,11 @@ mv index.html /var/www/html/index.html
 ### **4. Security Groups Are Blocking Port 80**
 Check if your instance’s security group allows port 80:
 ```bash
-microstack.openstack security group rule list default
+sudo microstack.openstack security group rule list default
 ```
 If TCP (port 80) is missing, allow it:
 ```bash
-microstack.openstack security group rule create --protocol tcp --dst-port 80 default
+sudo microstack.openstack security group rule create --protocol tcp --dst-port 80 default
 ```
 
 ### **5. Testing:**
